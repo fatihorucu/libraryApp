@@ -1,12 +1,10 @@
 import { ThemeProvider } from "@mui/joy";
-import Seats from "./components/Seat";
+import WelcomePage from "./pages/WelcomePage";
 function App() {
   return (
-    <>
-      <ThemeProvider>
-        <Seats />
-      </ThemeProvider>
-    </>
+    <ThemeProvider>
+      <WelcomePage />
+    </ThemeProvider>
   );
 }
 

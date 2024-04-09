@@ -1,11 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
-interface Table {
-  _id: string;
-  category: string;
-  numberOfChairs: number;
-  numberOfRows: number;
-}
+import { type Table } from "../models/table";
 
 interface TableState {
   items: Table[];

@@ -1,7 +1,10 @@
 import ChairAltIcon from "@mui/icons-material/ChairAlt";
 import { Typography } from "@mui/joy";
 import { Box } from "@mui/joy";
-function Seat({ tableNumber = 1 }) {
+interface SeatProps {
+  tableNumber: number;
+}
+function Seat({ tableNumber }: SeatProps) {
   return (
     <Box
       component="button"

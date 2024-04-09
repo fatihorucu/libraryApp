@@ -1,6 +1,6 @@
 export interface Table {
   _id: string;
   category: string;
-  numberOfTables: number;
+  numberOfChairs: number;
   numberOfRows: number;
 }

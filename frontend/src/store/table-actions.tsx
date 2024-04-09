@@ -1,10 +1,13 @@
 import { tableActions } from "./table-slice";
-import { type Dispatch } from "@reduxjs/toolkit";
+import { Table } from "../models/table";
+import { Dispatch } from "@reduxjs/toolkit";
 
 export function fetchTableData() {
   return async (dispatch: Dispatch) => {
-    async function fetchData() {
-      const response = await fetch("localhost:4000/api/tables");
+    async function fetchData(): Promise<Table[]> {
+      const response = await fetch("/api/tables", {
+        method: "GET",
+      });
 
       if (!response.ok) {
         throw new Error("Couldn't fetch tables data");
@@ -18,6 +21,8 @@ export function fetchTableData() {
     try {
       const tableData = await fetchData();
       if (tableData) {
+        console.log(tableData);
+
         dispatch(tableActions.setTables(tableData));
       }
     } catch (error) {

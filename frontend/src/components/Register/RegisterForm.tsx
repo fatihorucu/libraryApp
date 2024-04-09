@@ -1,10 +1,20 @@
-import { Box, Stack, Typography, FormControl, FormLabel } from "@mui/joy";
+import {
+  Box,
+  Stack,
+  Typography,
+  FormControl,
+  FormLabel,
+  Button,
+} from "@mui/joy";
 import MyInput from "./styledComponents/StyledInput";
 import PhoneInput from "./PhoneInput";
 
-function Register() {
+interface RegisterProps {
+  onBack: (buttonName: "register" | "login") => void;
+}
+function RegisterForm({ onBack }: RegisterProps) {
   return (
-    <Box width="40%" component={"form"}>
+    <Box component={"form"}>
       <Stack
         direction="column"
         justifyContent="flex-start"
@@ -41,9 +51,22 @@ function Register() {
         </FormControl>
         <MyInput type="password" placeholder="Password" fullWidth />
         <MyInput type="password" placeholder="Verify Your Password" fullWidth />
+        <Stack sx={{ width: "100%" }} gap={1} direction={"row"}>
+          <Button fullWidth size="md">
+            Register
+          </Button>
+          <Button
+            fullWidth
+            size="md"
+            variant="outlined"
+            onClick={() => onBack("register")}
+          >
+            Back
+          </Button>
+        </Stack>
       </Stack>
     </Box>
   );
 }
 
-export default Register;
+export default RegisterForm;
