@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  name: { type: String },
-  surname: { type: String },
-  studentNum: { type: String, required: true },
-  birthday: { type: String },
-  phoneNumber: { type: String },
-  password: { type: String, required: true },
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  surname: { type: String, required: true },
+  studentNum: { type: Number, required: true, unique: true, select: false },
+  birthday: { type: String, required: true },
+  phoneNumber: { type: Number, unique: true },
+  password: { type: String, required: true, select: false }, // select:false is for not including secret data in the response upon http requests
 });
 
-type User = mongoose.InferSchemaType<typeof userSchema>;
+type User = mongoose.InferSchemaType<typeof UserSchema>;
 
-export default mongoose.model<User>("User", userSchema);
+module.exports = mongoose.model("User", UserSchema);
+
+export default mongoose.model<User>("User", UserSchema);

@@ -37,7 +37,7 @@ export const createTable: RequestHandler<
       category: category,
     }).exec();
     if (existingCategory) {
-      throw createHttpError(400, "Category must be unique");
+      throw createHttpError(409, "Category must be unique");
     }
     const newTable = await TableModel.create({
       category: category,

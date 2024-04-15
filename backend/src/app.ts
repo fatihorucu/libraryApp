@@ -2,12 +2,16 @@ import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import createHttpError, { isHttpError } from "http-errors";
 import tablesRoutes from "./routes/tables";
+import usersRoutes from "./routes/users";
+import sessionMiddleware from "./middlewares/session";
 
 const app = express();
 
 app.use(express.json()); //Endpoints return only json
 
-app.use("/api/tables", tablesRoutes); // Use express router
+app.use(sessionMiddleware); // Use session middleware
+app.use("/api/tables", tablesRoutes); // Use tables routes
+app.use("/api/users", usersRoutes);
 
 app.use((req, res, next) => {
   next(createHttpError(404, "Endpoint not found"));
