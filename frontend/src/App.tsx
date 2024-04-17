@@ -1,9 +1,10 @@
 import { ThemeProvider } from "@mui/joy";
-import NavBar from "./components/UI/NavBar";
+
+import WelcomePage from "./pages/WelcomePage";
 function App() {
   return (
     <ThemeProvider>
-      <NavBar />
+      <WelcomePage />
     </ThemeProvider>
   );
 }

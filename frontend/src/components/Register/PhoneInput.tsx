@@ -8,8 +8,9 @@ interface CustomProps {
 }
 
 const TextMaskAdapter = React.forwardRef<HTMLInputElement, CustomProps>(
-  function TextMaskAdapter(props, ref) {
+  function TextMaskAdapter(props, inputRef) {
     const { onChange, ...other } = props;
+    const ref = React.createRef();
     return (
       <IMaskInput
         {...other}
@@ -17,7 +18,8 @@ const TextMaskAdapter = React.forwardRef<HTMLInputElement, CustomProps>(
         definitions={{
           "#": /[1-9]/,
         }}
-        inputRef={ref}
+        inputRef={inputRef}
+        ref={ref}
         onAccept={(value: string) =>
           onChange({ target: { name: props.name, value } })
         }
@@ -27,15 +29,17 @@ const TextMaskAdapter = React.forwardRef<HTMLInputElement, CustomProps>(
   }
 );
 
-export default function PhoneInput(props: InputProps) {
+function PhoneInput(props: InputProps) {
   const [value, setValue] = React.useState("");
   return (
     <Input
       value={value}
       onChange={(event) => setValue(event.target.value)}
-      placeholder="Placeholder"
+      placeholder="Phone Number"
       slotProps={{ input: { component: TextMaskAdapter } }}
       {...props}
     />
   );
 }
+
+export default PhoneInput;

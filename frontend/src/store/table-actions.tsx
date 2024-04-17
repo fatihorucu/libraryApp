@@ -21,8 +21,6 @@ export function fetchTableData() {
     try {
       const tableData = await fetchData();
       if (tableData) {
-        console.log(tableData);
-
         dispatch(tableActions.setTables(tableData));
       }
     } catch (error) {
