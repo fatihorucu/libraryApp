@@ -1,5 +1,5 @@
 import { Box, Stack, Typography, Button } from "@mui/joy";
-import MyInput from "./styledComponents/StyledInput";
+import MyInput from "./styledComponents/MyInput";
 interface LoginProps {
   onBack: (buttonName: "register" | "login") => void;
 }

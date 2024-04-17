@@ -29,17 +29,19 @@ const TextMaskAdapter = React.forwardRef<HTMLInputElement, CustomProps>(
   }
 );
 
-function PhoneInput(props: InputProps) {
-  const [value, setValue] = React.useState("");
-  return (
-    <Input
-      value={value}
-      onChange={(event) => setValue(event.target.value)}
-      placeholder="Phone Number"
-      slotProps={{ input: { component: TextMaskAdapter } }}
-      {...props}
-    />
-  );
-}
+const PhoneInput = React.forwardRef<HTMLInputElement, InputProps>(
+  function PhoneInput(props, ref) {
+    const [value, setValue] = React.useState("");
+    return (
+      <Input
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder="Phone Number"
+        slotProps={{ input: { component: TextMaskAdapter, ref: ref } }}
+        {...props}
+      />
+    );
+  }
+);
 
 export default PhoneInput;
