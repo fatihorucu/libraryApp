@@ -19,7 +19,7 @@ function LoginForm({ onBack }: LoginProps) {
         <MyInput type="password" placeholder="Password" fullWidth />
         <Stack sx={{ width: "100%" }} gap={1} direction={"row"}>
           <Button fullWidth size="md">
-            Register
+            Login
           </Button>
           <Button
             fullWidth

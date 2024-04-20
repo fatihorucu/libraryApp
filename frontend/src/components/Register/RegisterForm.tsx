@@ -6,13 +6,14 @@ import {
   FormHelperText,
 } from "@mui/joy";
 import MyInput from "./styledComponents/MyInput";
-import { FormEvent, useRef } from "react";
+import { FormEvent, useRef, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { validationErrorActions } from "../../store/validationError-slice";
 import { cleanPhoneNumber } from "../../util/cleanInput";
 import * as ValidateInput from "../../util/validateInput";
 import MaskedInput from "./MaskedInput";
 import { type PayloadType } from "../../store/validationError-slice";
+import { initialErrorState } from "../../store/validationError-slice";
 
 interface RegisterProps {
   onBack: (buttonName: "register" | "login") => void;
@@ -21,6 +22,9 @@ interface RegisterProps {
 function RegisterForm({ onBack }: RegisterProps) {
   const dispatch = useAppDispatch();
   const validationError = useAppSelector((state) => state.validationError);
+
+  console.log(validationError);
+
   const {
     password: vPassword,
     surname: vSurname,
@@ -124,6 +128,12 @@ function RegisterForm({ onBack }: RegisterProps) {
   const handleFocus: HandleFocusFunction = ({ field, error }) => {
     dispatch(validationErrorActions.setError({ field, error }));
   };
+
+  function handleBack() {
+    dispatch(validationErrorActions.resetError());
+    onBack("register");
+  }
+
   return (
     <Stack component={"form"} onSubmit={handleSubmit}>
       <Stack
@@ -151,7 +161,7 @@ function RegisterForm({ onBack }: RegisterProps) {
               ref={nameRef}
               name="name"
               defaultValue={""}
-              onFocus={() => handleFocus({ field: "name", error: null })}
+              onFocus={() => handleFocus({ field: "name", error: "" })}
             />
 
             {vName.error && <FormHelperText>{vName.error}</FormHelperText>}
@@ -167,7 +177,7 @@ function RegisterForm({ onBack }: RegisterProps) {
               name="surname"
               ref={surnameRef}
               defaultValue={""}
-              onFocus={() => handleFocus({ field: "surname", error: null })}
+              onFocus={() => handleFocus({ field: "surname", error: "" })}
             />
             {vSurname.error && (
               <FormHelperText>{vSurname.error}</FormHelperText>
@@ -184,7 +194,7 @@ function RegisterForm({ onBack }: RegisterProps) {
             placeholder="Birthday"
             name="birthday"
             onFocus={(e) => {
-              handleFocus({ field: "birthday", error: null });
+              handleFocus({ field: "birthday", error: "" });
               return (e.target.type = "date");
             }}
             ref={birthdayRef}
@@ -202,7 +212,7 @@ function RegisterForm({ onBack }: RegisterProps) {
             ref={studentNumRef}
             name="studentNum"
             size="lg"
-            onFocus={() => handleFocus({ field: "studentNum", error: null })}
+            onFocus={() => handleFocus({ field: "studentNum", error: "" })}
           />
           {vStudentNum.error && (
             <FormHelperText>{vStudentNum.error}</FormHelperText>
@@ -215,7 +225,7 @@ function RegisterForm({ onBack }: RegisterProps) {
             name="phoneNum"
             ref={phoneNumRef}
             defaultValue={""}
-            onFocus={() => handleFocus({ field: "phoneNum", error: null })}
+            onFocus={() => handleFocus({ field: "phoneNum", error: "" })}
           />
           {vPhone.error && <FormHelperText>{vPhone.error}</FormHelperText>}
         </FormControl>
@@ -230,8 +240,8 @@ function RegisterForm({ onBack }: RegisterProps) {
             ref={passwordRef}
             defaultValue={""}
             onFocus={() => {
-              handleFocus({ field: "password", error: null });
-              handleFocus({ field: "passwordMatch", error: null });
+              handleFocus({ field: "password", error: "" });
+              handleFocus({ field: "passwordMatch", error: "" });
             }}
           />
           {vPassword.error ? (
@@ -250,7 +260,7 @@ function RegisterForm({ onBack }: RegisterProps) {
             name="password2"
             ref={passwordRef2}
             defaultValue={""}
-            onFocus={() => handleFocus({ field: "passwordMatch", error: null })}
+            onFocus={() => handleFocus({ field: "passwordMatch", error: "" })}
           />
           {vPasswordMatch.error && (
             <FormHelperText>{vPasswordMatch.error}</FormHelperText>
@@ -261,12 +271,7 @@ function RegisterForm({ onBack }: RegisterProps) {
           <Button fullWidth size="md" type="submit">
             Register
           </Button>
-          <Button
-            fullWidth
-            size="md"
-            variant="outlined"
-            onClick={() => onBack("register")}
-          >
+          <Button fullWidth size="md" variant="outlined" onClick={handleBack}>
             Back
           </Button>
         </Stack>

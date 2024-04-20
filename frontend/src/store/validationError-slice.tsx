@@ -1,13 +1,13 @@
 import { createSlice, type PayloadAction, current } from "@reduxjs/toolkit";
 
 interface ErrorState {
-  password: { error: string | null };
-  studentNum: { error: string | null };
-  name: { error: string | null };
-  surname: { error: string | null };
-  phoneNum: { error: string | null };
-  birthday: { error: string | null };
-  passwordMatch: { error: string | null };
+  password: { error: string };
+  studentNum: { error: string };
+  name: { error: string };
+  surname: { error: string };
+  phoneNum: { error: string };
+  birthday: { error: string };
+  passwordMatch: { error: string };
 }
 
 export interface PayloadType {
@@ -19,17 +19,17 @@ export interface PayloadType {
     | "phoneNum"
     | "birthday"
     | "passwordMatch";
-  error: string | null;
+  error: string;
 }
 
-const initialErrorState: ErrorState = {
-  password: { error: null },
-  studentNum: { error: null },
-  name: { error: null },
-  surname: { error: null },
-  phoneNum: { error: null },
-  birthday: { error: null },
-  passwordMatch: { error: null },
+export const initialErrorState: ErrorState = {
+  password: { error: "" },
+  studentNum: { error: "" },
+  name: { error: "" },
+  surname: { error: "" },
+  phoneNum: { error: "" },
+  birthday: { error: "" },
+  passwordMatch: { error: "" },
 };
 
 const validationErrorSlice = createSlice({
@@ -40,6 +40,16 @@ const validationErrorSlice = createSlice({
       const { field, error } = action.payload;
       state[field].error = error;
       console.log(current(state));
+    },
+    resetError(state) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      state.birthday.error = "";
+      state.name.error = "";
+      state.surname.error = "";
+      state.password.error = "";
+      state.passwordMatch.error = "";
+      state.phoneNum.error = "";
+      state.studentNum.error = "";
     },
   },
 });
