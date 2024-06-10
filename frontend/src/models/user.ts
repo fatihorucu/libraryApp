@@ -3,6 +3,6 @@ export interface User {
   surname: string;
   studentNum: string;
   phoneNum: string;
-  birthday: string;
+  birthday: Date;
   password: string;
 }
