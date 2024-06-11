@@ -1,0 +1,10 @@
+{
+  "name": "fatihorucu/libraryapp",
+  "description": "LibraryApp API",
+  "autoload": {
+    "psr-4": {
+      "Framework\\": "Framework/",
+      "App\\": "App/"
+    }
+  }
+}
