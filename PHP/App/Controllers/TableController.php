@@ -14,8 +14,9 @@ class TableController
         $this->db = new Database($config);
     }
 
-    public function getTables()
+    public function index()
     {
-        inspectAndDie("Get Tables");
+        $tables = $this->db->query("SELECT * FROM tables ORDER BY category DESC")->fetchAll();
+        returnJsonHttpResponse(200, $tables);
     }
 }

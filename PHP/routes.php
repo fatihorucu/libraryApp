@@ -1,3 +1,3 @@
 <?php
 
-$router->get("/", "TableController@getTables");
+$router->get("/", "TableController@index");
