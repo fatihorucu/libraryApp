@@ -6,6 +6,7 @@ use Error;
 use Framework\Database;
 use Framework\Validation;
 use Throwable;
+use Framework\Session;
 
 class UserController
 {
@@ -109,5 +110,17 @@ class UserController
         ];
 
         $this->db->query('INSERT INTO users (name, surname, studentNum, birthday, password, phoneNumber) VALUES (:name, :surname, :studentNum, :birthday, :password, :phoneNumber)', $params);
+
+        // Get new user ID
+        $userId = $this->db->conn->lastInsertId();
+
+        // Set user session
+        Session::set('user', [
+            'id' => $userId,
+            'name' => $name,
+            'surname' => $surname,
+            'studentNum' => $studentNum,
+            'birthday' => $birthday
+        ]);
     }
 }

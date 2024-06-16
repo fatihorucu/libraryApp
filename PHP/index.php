@@ -8,13 +8,17 @@ require "./vendor/autoload.php";
 require "./helpers.php";
 
 use Framework\Router;
+use Framework\Session;
 
+Session::start();
 
 //Instantiate router
 $router = new Router();
 
 // Get routes
-$routes = require "./routes.php";
+useRoutes("tablesRoutes", "/api/tables");
+useRoutes("usersRoutes", "/api/users");
+// require "./routes.php";
 
 //Get current uri and http method
 $uri = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH); //exclude the parameters in the uri. Get only the url part.

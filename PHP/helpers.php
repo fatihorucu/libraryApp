@@ -28,6 +28,31 @@ function inspectAndDie($value)
     die();
 }
 
+/**
+ * Redirect to given url
+ * 
+ * @param string $url
+ * 
+ * @return void
+ */
+function redirect($url)
+{
+    header("Location: {$url}");
+    exit;
+};
+
+function useRoutes($fileName, $basePath = "")
+{
+    $filePath = __DIR__ . "/Routes/" . $fileName . ".php";
+    if (file_exists($filePath)) {
+        extract(["basePath" => $basePath]);
+        require $filePath;
+    } else {
+        echo "File named " . $fileName . "doesn't exists.";
+    }
+}
+
+
 
 /*
  * Return Json with http response code, Returns internal server error in no parameters provided.

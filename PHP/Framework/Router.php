@@ -6,6 +6,17 @@ namespace Framework;
 class Router
 {
     protected $routes = [];
+    protected $basePath;
+
+    public function setBasePath($basePath)
+    {
+        $this->basePath = $basePath;
+    }
+
+    public function getBasePath()
+    {
+        return $this->basePath;
+    }
     /**
      * Append a route with its method
      * 
@@ -16,13 +27,13 @@ class Router
      * 
      * @return void
      */
-    private function registerRoute($method, $uri, $action, $middleware = [])
+    private function registerRoute($method, $uri, $action, $middleware)
     {
         list($controller, $controllerMethod) = explode("@", $action); // explode () seperates the action, which is a string, into a list.. And list() function destructures the array into variables.
 
         $this->routes[] = [
             "method" => $method,
-            "uri" => $uri,
+            "uri" => ($this->basePath ? $this->basePath : "") . $uri,
             "controller" => $controller,
             "controllerMethod" => $controllerMethod,
             "middleware" => $middleware,
@@ -133,6 +144,6 @@ class Router
                 }
             }
         }
-        // ErrorController::notFound();
+        returnJsonHttpResponse(404, ["error" => "Resource not found."]);
     } // We can handle this routing function in seperate functions that we have created, which is get, post, put, delete
 }
