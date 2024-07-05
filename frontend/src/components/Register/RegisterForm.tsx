@@ -6,24 +6,24 @@ import {
   FormHelperText,
 } from "@mui/joy";
 import MyInput from "./styledComponents/MyInput";
-import { FormEvent, useRef, useEffect } from "react";
+import { FormEvent, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { validationErrorActions } from "../../store/validationError-slice";
 import { cleanPhoneNumber } from "../../util/cleanInput";
 import * as ValidateInput from "../../util/validateInput";
 import MaskedInput from "./MaskedInput";
 import { type PayloadType } from "../../store/validationError-slice";
-import { initialErrorState } from "../../store/validationError-slice";
+import { fetchHandleActions } from "../../store/fetchHandle-slice";
+import * as Http from "../../http.ts";
+import { useNavigate } from "react-router-dom";
 
-interface RegisterProps {
-  onBack: (buttonName: "register" | "login") => void;
-}
-
-function RegisterForm({ onBack }: RegisterProps) {
+function RegisterForm() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const validationError = useAppSelector((state) => state.validationError);
-
-  console.log(validationError);
+  const { error: fetchError, isFetching } = useAppSelector(
+    (state) => state.fetchHandle
+  );
 
   const {
     password: vPassword,
@@ -34,6 +34,8 @@ function RegisterForm({ onBack }: RegisterProps) {
     studentNum: vStudentNum,
     passwordMatch: vPasswordMatch,
   } = validationError;
+
+  // const { error: fetchError, isFetching } = fetchHandle;
 
   const nameRef = useRef<HTMLInputElement>(null);
   const surnameRef = useRef<HTMLInputElement>(null);
@@ -122,16 +124,47 @@ function RegisterForm({ onBack }: RegisterProps) {
         })
       );
     }
+    if (
+      vName.error ||
+      vSurname.error ||
+      vPassword.error ||
+      vPasswordMatch.error ||
+      vPhone.error ||
+      vStudentNum.error ||
+      vBirthday.error
+    ) {
+      return;
+    } else {
+      async function sendRegisterRequest() {
+        dispatch(fetchHandleActions.setIsFetching(true));
+        const response = await Http.createUser({
+          name,
+          surname,
+          studentNum,
+          birthday,
+          phoneNum,
+          password,
+        });
+        dispatch(fetchHandleActions.setIsFetching(false));
+        if (!response.ok) {
+          const { error } = await response.json();
+          dispatch(fetchHandleActions.setError(error));
+        }
+      }
+      sendRegisterRequest();
+    }
   }
   type HandleFocusFunction = ({ field, error }: PayloadType) => void;
 
   const handleFocus: HandleFocusFunction = ({ field, error }) => {
     dispatch(validationErrorActions.setError({ field, error }));
+    dispatch(fetchHandleActions.deleteError(field));
   };
 
   function handleBack() {
     dispatch(validationErrorActions.resetError());
-    onBack("register");
+    dispatch(fetchHandleActions.setError(null));
+    navigate("/auth");
   }
 
   return (
@@ -153,7 +186,7 @@ function RegisterForm({ onBack }: RegisterProps) {
         >
           <FormControl
             sx={{ width: "48%", flexGrow: 1 }}
-            error={vName.error ? true : false}
+            error={vName.error || fetchError?.name ? true : false}
           >
             <MyInput
               placeholder="Name"
@@ -165,10 +198,11 @@ function RegisterForm({ onBack }: RegisterProps) {
             />
 
             {vName.error && <FormHelperText>{vName.error}</FormHelperText>}
+            {<FormHelperText>{fetchError?.name}</FormHelperText>}
           </FormControl>
           <FormControl
             sx={{ width: "48%", flexGrow: 1 }}
-            error={vSurname.error ? true : false}
+            error={vSurname.error || fetchError?.surname ? true : false}
           >
             <MyInput
               placeholder="Surname"
@@ -182,11 +216,12 @@ function RegisterForm({ onBack }: RegisterProps) {
             {vSurname.error && (
               <FormHelperText>{vSurname.error}</FormHelperText>
             )}
+            {<FormHelperText>{fetchError?.surname}</FormHelperText>}
           </FormControl>
         </Stack>
         <FormControl
           sx={{ width: "100%" }}
-          error={vBirthday.error ? true : false}
+          error={vBirthday.error || fetchError?.birthday ? true : false}
         >
           <MyInput
             type="text"
@@ -203,10 +238,11 @@ function RegisterForm({ onBack }: RegisterProps) {
           {vBirthday.error && (
             <FormHelperText>{vBirthday.error}</FormHelperText>
           )}
+          {<FormHelperText>{fetchError?.birthday}</FormHelperText>}
         </FormControl>
         <FormControl
           sx={{ width: "100%" }}
-          error={vStudentNum.error ? true : false}
+          error={vStudentNum.error || fetchError?.studentNum ? true : false}
         >
           <MaskedInput
             ref={studentNumRef}
@@ -218,7 +254,7 @@ function RegisterForm({ onBack }: RegisterProps) {
             <FormHelperText>{vStudentNum.error}</FormHelperText>
           )}
         </FormControl>
-
+        {<FormHelperText>{fetchError?.studentNum}</FormHelperText>}
         <FormControl sx={{ width: "100%" }} error={vPhone.error ? true : false}>
           <MaskedInput
             size="lg"
@@ -231,7 +267,11 @@ function RegisterForm({ onBack }: RegisterProps) {
         </FormControl>
         <FormControl
           sx={{ width: "100%" }}
-          error={vPassword.error || vPasswordMatch.error ? true : false}
+          error={
+            vPassword.error || vPasswordMatch.error || fetchError?.password
+              ? true
+              : false
+          }
         >
           <MyInput
             placeholder="Password"
@@ -249,6 +289,7 @@ function RegisterForm({ onBack }: RegisterProps) {
           ) : vPasswordMatch.error ? (
             <FormHelperText>{vPasswordMatch.error}</FormHelperText>
           ) : undefined}
+          {<FormHelperText>{fetchError?.password}</FormHelperText>}
         </FormControl>
         <FormControl
           sx={{ width: "100%" }}

@@ -3,14 +3,14 @@ import { User } from "./models/user";
 interface UserInput {
   name: string;
   surname: string;
-  studentNum: number;
-  phoneNum?: number;
+  studentNum: string;
+  phoneNum?: string;
   birthday: string;
   password: string;
 }
 
-export async function createUser(user: UserInput): Promise<User> {
-  const response = await fetch("/api/users/signup", {
+export async function createUser(user: UserInput): Promise<Response> {
+  const response = await fetch("/api/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,15 +18,15 @@ export async function createUser(user: UserInput): Promise<User> {
     body: JSON.stringify(user),
   });
 
-  return response.json();
+  return response;
 }
 
 interface LoginInput {
-  username?: string;
+  studentNum?: string;
   password?: string;
 }
-export async function login(user: LoginInput): Promise<User> {
-  const response = await fetch("/api/users/login", {
+export async function login(user: LoginInput): Promise<Response> {
+  const response = await fetch("/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -34,26 +34,26 @@ export async function login(user: LoginInput): Promise<User> {
     body: JSON.stringify(user),
   });
 
-  return response.json();
+  return response;
 }
 
 export async function logout() {
-  const response = await fetch("/api/users/logout", {
+  const response = await fetch("/api/auth/logout", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
   });
 
-  return response.json();
+  return response;
 }
-export async function getCurrentUser(): Promise<User> {
-  const response = await fetch("/api/users/login", {
+export async function getCurrentUser(): Promise<Response> {
+  const response = await fetch("/api/auth/login", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   });
 
-  return response.json();
+  return response;
 }
