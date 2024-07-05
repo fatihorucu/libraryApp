@@ -60,7 +60,7 @@ function useRoutes($fileName, $basePath = "")
  * @param $success: Boolean
  * @param $data: Object or Array
  */
-function returnJsonHttpResponse($httpCode = 500, $data = ["error" => "An unkown error occured"])
+function returnJsonHttpResponse($httpCode = 500, $data = "An unkown error occured")
 {
     // remove any string that could create an invalid JSON 
     // such as PHP Notice, Warning, logs...
@@ -81,8 +81,14 @@ function returnJsonHttpResponse($httpCode = 500, $data = ["error" => "An unkown 
 
     // encode your PHP Object or Array into a JSON string.
     // stdClass or array
-    echo json_encode($data);
+
+    if (($httpCode >= 200 && $httpCode <= 299)) {
+        echo json_encode($data);
+    } else {
+        echo json_encode(["error" => $data]);
+    }
+
 
     // making sure nothing is added
-    exit();
+    exit;
 }

@@ -36,12 +36,15 @@ class UserController
      */
     public function store()
     {
-        $name = $_POST["name"];
-        $surname = $_POST["surname"];
-        $studentNum = $_POST["studentNum"];
-        $birthday = $_POST["birthday"];
-        $phoneNumber = $_POST["phoneNumber"];
-        $passwordRow = $_POST["password"];
+        $request = file_get_contents('php://input');
+        $userData = json_decode($request, true);
+
+        $name = $userData["name"] ?? "";
+        $surname = $userData["surname"] ?? "";
+        $studentNum = $userData["studentNum"] ?? "";
+        $birthday = $userData["birthday"] ?? "";
+        $phoneNumber = $userData["phoneNum"] ?? "";
+        $passwordRow = $userData["password"] ?? "";
 
         $errors = [];
 
@@ -59,16 +62,12 @@ class UserController
         if (!Validation::isStringValid($birthday, 1)) {
             $errors['birthday'] = "Birthday field can't be empty";
         }
-        if (!Validation::isStringValid($phoneNumber, 10, 10)) {
-            $errors['phoneNumber'] = 'You should enter a 10 digit phone number';
-        }
-        if (!Validation::isStringValid($passwordRow, 6, 50)) {
-            $errors['password'] = 'Password must be 6 character long.';
+        if (!Validation::isStringValid($passwordRow, 8, 50)) {
+            $errors['password'] = 'Password must be 8 character long.';
         }
 
         if (!empty($errors)) {
             returnJsonHttpResponse(400, $errors);
-            exit;
         }
 
         //Check if student number exists
@@ -82,7 +81,6 @@ class UserController
         if ($user) {
             $errors['studentNum'] = 'This student number is in use';
             returnJsonHttpResponse(409, $errors);
-            exit;
         }
 
         //Check if phone number exists
@@ -91,12 +89,11 @@ class UserController
             'phoneNumber' => $phoneNumber
         ];
 
-        $user = $this->db->query('SELECT * FROM users WHERE phoneNumber = :phoneNumber', $params)->fetch();
+        $user = $this->db->query('SELECT * FROM users WHERE phoneNum = :phoneNumber', $params)->fetch();
 
         if ($user) {
-            $errors['studentNum'] = 'Phone number is already in use';
+            $errors['phoneNum'] = 'Phone number is already in use';
             returnJsonHttpResponse(409, $errors);
-            exit;
         }
 
         // Create user account
@@ -109,7 +106,7 @@ class UserController
             'password' => password_hash($passwordRow, PASSWORD_DEFAULT)
         ];
 
-        $this->db->query('INSERT INTO users (name, surname, studentNum, birthday, password, phoneNumber) VALUES (:name, :surname, :studentNum, :birthday, :password, :phoneNumber)', $params);
+        $this->db->query('INSERT INTO users (name, surname, studentNum, birthday, password, phoneNum) VALUES (:name, :surname, :studentNum, :birthday, :password, :phoneNumber)', $params);
 
         // Get new user ID
         $userId = $this->db->conn->lastInsertId();
@@ -122,5 +119,65 @@ class UserController
             'studentNum' => $studentNum,
             'birthday' => $birthday
         ]);
+    }
+    /**
+     * Logout a user and kill session
+     * 
+     * @return void
+     */
+    public function logout()
+    {
+        Session::clearAll();
+
+        $params = session_get_cookie_params();
+        setcookie('PHPSESSID', '', time() - 86400, $params['path'], $params['domain']);
+
+        redirect('/');
+    }
+
+    /**
+     * Authenticate a user with email and password
+     * 
+     * @return void
+     */
+    public function authenticate()
+    {
+        $request = file_get_contents('php://input');
+        $userData = json_decode($request, true);
+        $studentNum = $userData['studentNum'] ?? "";
+        $password = $userData['password'] ?? "";
+
+        $errors = [];
+
+        // Validation
+        if (!$studentNum || !$password) {
+            returnJsonHttpResponse(400, ["loginErr" => "Parameters missing"]);
+        }
+
+        // Check for email
+        $params = [
+            'studentNum' => $studentNum
+        ];
+
+        $user = $this->db->query('SELECT * FROM users WHERE studentNum = :studentNum', $params)->fetch();
+
+        if (!$user) {
+            returnJsonHttpResponse(401, ["loginErr" => "Incorrect credentials"]);
+        }
+
+        // Check if password is correct
+        if (!password_verify($password, $user["password"])) {
+            returnJsonHttpResponse(401, ["loginErr" => "Incorrect credentials"]);
+        }
+
+        // Set user session
+        Session::set('user', [
+            'id' => $user["id"],
+            'name' => $user["name"],
+            'studentNum' => $user["studentNum"],
+            'birthday' => $user["birthday"],
+        ]);
+
+        returnJsonHttpResponse(201, $user);
     }
 }
