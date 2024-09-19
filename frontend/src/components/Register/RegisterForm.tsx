@@ -21,9 +21,7 @@ function RegisterForm() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const validationError = useAppSelector((state) => state.validationError);
-  const { error: fetchError, isFetching } = useAppSelector(
-    (state) => state.fetchHandle
-  );
+  const { error: fetchError } = useAppSelector((state) => state.fetchHandle);
 
   const {
     password: vPassword,

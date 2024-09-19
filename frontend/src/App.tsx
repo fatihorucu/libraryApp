@@ -5,6 +5,7 @@ import LoginForm from "./components/Register/LoginForm";
 import RegisterForm from "./components/Register/RegisterForm";
 import WelcomePageLayout from "./pages/WelcomePageLayout";
 import WelcomeButtons from "./components/Register/WelcomeButtons";
+import "./App.css";
 function App() {
   const router = createBrowserRouter([
     {

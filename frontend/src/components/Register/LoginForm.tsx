@@ -13,12 +13,9 @@ import { useNavigate } from "react-router-dom";
 import { fetchHandleActions } from "../../store/fetchHandle-slice";
 import * as Http from "../../http";
 import { FormEvent, useRef } from "react";
-import { PayloadType } from "../../store/validationError-slice";
 function LoginForm() {
   const navigate = useNavigate();
-  const { error: fetchError, isFetching } = useAppSelector(
-    (state) => state.fetchHandle
-  );
+  const { error: fetchError } = useAppSelector((state) => state.fetchHandle);
   const dispatch = useAppDispatch();
 
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -38,6 +35,7 @@ function LoginForm() {
         password,
       });
       dispatch(fetchHandleActions.setIsFetching(false));
+
       if (!response.ok) {
         const { error } = await response.json();
         console.log(error);

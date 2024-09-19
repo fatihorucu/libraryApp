@@ -1,5 +1,3 @@
-import { User } from "./models/user";
-
 interface UserInput {
   name: string;
   surname: string;
@@ -48,7 +46,7 @@ export async function logout() {
   return response;
 }
 export async function getCurrentUser(): Promise<Response> {
-  const response = await fetch("/api/auth/login", {
+  const response = await fetch("/api/auth/getAuthenticatedUser", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

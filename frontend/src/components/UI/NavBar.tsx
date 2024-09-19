@@ -13,7 +13,13 @@ import {
   AspectRatio,
 } from "@mui/joy";
 import { Home, Person } from "@mui/icons-material";
-function NavBar() {
+import { AuthenticatedUser } from "../../models/authenticatedUser";
+
+interface NavbarProps {
+  authenticatedUser: AuthenticatedUser | null;
+}
+
+function NavBar({ authenticatedUser }: NavbarProps) {
   return (
     <>
       <Box component="nav" aria-label="My site" sx={{ flexGrow: 1 }}>
@@ -25,11 +31,11 @@ function NavBar() {
               href="#horizontal-list"
               aria-label="Home"
             >
-              <Box>
-                <AspectRatio>
+              <Box sx={{ width: 50, height: 50 }}>
+                <AspectRatio ratio={1} sx={{ backgroundColor: "transparent" }}>
                   <img
                     src="https://upload.wikimedia.org/wikipedia/en/7/76/Bo%C4%9Fazi%C3%A7i_University_logo.svg"
-                    alt=""
+                    alt="Bogazici University Logo"
                   />
                 </AspectRatio>
               </Box>
