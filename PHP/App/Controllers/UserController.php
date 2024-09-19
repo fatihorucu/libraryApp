@@ -174,10 +174,20 @@ class UserController
         Session::set('user', [
             'id' => $user["id"],
             'name' => $user["name"],
+            'surname' => $user["surname"],
             'studentNum' => $user["studentNum"],
             'birthday' => $user["birthday"],
         ]);
 
         returnJsonHttpResponse(201, $user);
+    }
+
+    public function getAuthenticatedUser()
+    {
+        if (Session::has("user")) {
+            $user = Session::get("user");
+            returnJsonHttpResponse(201, $user);
+        }
+        returnJsonHttpResponse(401, "User not authenticated");
     }
 }

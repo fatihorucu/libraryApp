@@ -152,7 +152,7 @@ class ReservationController
         if ($isTypeA) {
             // Type A user restrictions
             if (count($userReservations) > 1) {
-                returnJsonHttpResponse(409, ["reservationError" => "You already have an ongoing and future reservation"]);
+                returnJsonHttpResponse(409, ["reservationError" => "You already have an ongoing and future reservation."]);
                 return;
             }
             if (Validation::checkDateDiffInHours($dateStart, $dateEnd) > 2) {
@@ -189,7 +189,107 @@ class ReservationController
     /**
      * Update a current reservation
      */
-    public function update()
+    public function update($params)
     {
+        $request = file_get_contents('php://input');
+        $reservationData = json_decode($request, true);
+
+        $newEndDate = $reservationData["dateEnd"] ?? "";
+        $reservationId = $params["reservationId"];
+
+        $errors = [];
+
+        // Input Validation
+        if (!$newEndDate) {
+            $errors["dateEnd"] = "dateEnd can't be empty";
+        }
+
+        if ($newEndDate && Validation::isDateSmaller($newEndDate, "now")) {
+            $errors["dateEnd"] = "dateEnd can't be smaller than current time";
+        }
+
+        if (!empty($errors)) {
+            returnJsonHttpResponse(400, $errors);
+            return;
+        }
+
+        // Fetch the current reservation
+        $reservation = $this->db->query(
+            "SELECT * FROM reservations WHERE id = :reservationId",
+            ["reservationId" => $reservationId]
+        )->fetch();
+
+        $userId = $reservation["userId"];
+
+        if (!$reservation) {
+            returnJsonHttpResponse(404, ["reservationError" => "Reservation not found"]);
+            return;
+        }
+        // Thanks to functionality in store function there might be 2 seperate reservation records -one is current, one is future- belonging to the same user.
+        // That is why we need to
+        // Check if user has any future reservations
+        $userFutureReservations = $this->db->query(
+            "SELECT * FROM reservations WHERE userId = :userId AND dateStart > NOW();",
+            ["userId" => $userId]
+        )->fetchAll();
+
+        if (count($userFutureReservations) > 0) {
+            returnJsonHttpResponse(409, ["reservationError" => "You can't extend your current reservation if you have a future reservation"]);
+            return;
+        }
+
+        $currentEndDate = $reservation["dateEnd"];
+
+        // Check if the current reservation end time is within the next 1 hour
+        if (Validation::checkDateDiffInHours("now", $currentEndDate) > 1) {
+            returnJsonHttpResponse(409, ["reservationError" => "You can only extend the reservation within 1 hour of its end time"]);
+            return;
+        }
+
+        // Check if the new end date is more than 2 hours from current end date
+        if (Validation::checkDateDiffInHours($currentEndDate, $newEndDate) > 2) {
+            returnJsonHttpResponse(409, ["reservationError" => "You can't extend the reservation for more than 2 hours"]);
+            return;
+        }
+
+        // Check for conflicting reservations
+        $params = [
+            "tableId" => $reservation["tableId"],
+            "chairNumber" => $reservation["chairNumber"],
+            "dateStart" => $currentEndDate,
+            "dateEnd" => $newEndDate,
+            "reservationId" => $reservationId
+        ];
+
+        $conflictingReservation = $this->db->query(
+            "SELECT * FROM reservations 
+         WHERE tableId = :tableId 
+         AND chairNumber = :chairNumber 
+         AND id != :reservationId
+         AND (
+             (dateStart < :dateEnd AND dateEnd > :dateStart)
+         );",
+            $params
+        )->fetch();
+
+        if ($conflictingReservation) {
+            returnJsonHttpResponse(409, ["reservationError" => "This chair is already reserved during the requested extended time slot"]);
+            return;
+        }
+
+        // Update the reservation end date
+        $params = [
+            "id" => $reservationId,
+            "dateEnd" => $newEndDate
+        ];
+
+        $response = $this->db->query(
+            "UPDATE reservations SET dateEnd = :dateEnd WHERE id = :id",
+            $params
+        );
+
+        if (!$response) {
+            returnJsonHttpResponse();
+        }
     }
 }

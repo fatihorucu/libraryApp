@@ -74,6 +74,17 @@ class Router
     {
         $this->registerRoute("PUT", $uri, $controller, $middleware);
     }
+
+    /**
+     * Add a PATCH route
+     * 
+     * @param string $uri
+     * @param string $controller
+     */
+    public function patch($uri, $controller, $middleware = [])
+    {
+        $this->registerRoute("PATCH", $uri, $controller, $middleware);
+    }
     /**
      * Add a DELETE route
      * 
