@@ -41,7 +41,7 @@ function NavBar({ authenticatedUser }: NavbarProps) {
               </Box>
             </ListItemButton>
           </ListItem>
-
+          {/** test commit */}
           <ListItem role="none">
             <ListItemButton
               role="menuitem"
