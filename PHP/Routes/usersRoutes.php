@@ -9,7 +9,7 @@ $router->get("/getAuthenticatedUser", "UserController@getAuthenticatedUser");
 // $router->get("/auth/register", "UserController@create", ["guest"]);
 
 $router->post("/register", "UserController@store");
-// $router->post("/auth/logout", "UserController@logout", ["auth"]);
+$router->post("/logout", "UserController@logout"/* , ["auth"] */);
 $router->post("/login", "UserController@authenticate");
 
 

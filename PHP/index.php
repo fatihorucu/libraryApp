@@ -7,6 +7,9 @@ error_reporting(E_ALL);
 require "./vendor/autoload.php";
 require "./helpers.php";
 
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Credentials: true");
+
 use Framework\Router;
 use Framework\Session;
 
