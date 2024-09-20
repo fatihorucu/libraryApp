@@ -18,12 +18,12 @@ function CurrentStatusPage() {
 
   return (
     <>
-      <NavBar />
-      {tableList.length > 0
+      <NavBar authenticatedUser={authenticatedUser} />
+      {tableList.length > 0 && authenticatedUser
         ? tableList.map((item) => {
             return <Table table={item} />;
           })
-        : undefined}
+        : "User not authenticated"}
     </>
   );
 }

@@ -14,12 +14,30 @@ import {
 } from "@mui/joy";
 import { Home, Person } from "@mui/icons-material";
 import { AuthenticatedUser } from "../../models/authenticatedUser";
+import * as http from "../../http";
+import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
   authenticatedUser: AuthenticatedUser | null;
 }
 
 function NavBar({ authenticatedUser }: NavbarProps) {
+  const navigate = useNavigate();
+  function handleLogout() {
+    async function logout() {
+      const response = await http.logout();
+      const data = await response.json();
+      console.log(data);
+
+      if (!response.ok) {
+        const { error } = await response.json();
+        alert(error);
+      }
+    }
+    logout();
+    navigate("/auth");
+  }
+
   return (
     <>
       <Box component="nav" aria-label="My site" sx={{ flexGrow: 1 }}>
@@ -64,12 +82,12 @@ function NavBar({ authenticatedUser }: NavbarProps) {
           <ListItem role="none" sx={{ marginInlineStart: "auto" }}>
             <Dropdown>
               <MenuButton endDecorator={<Avatar />} variant="plain">
-                User
+                {authenticatedUser ? authenticatedUser.name : undefined}
               </MenuButton>
               <Menu>
                 <MenuItem>Profile</MenuItem>
                 <MenuItem>My account</MenuItem>
-                <MenuItem>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </Dropdown>
           </ListItem>

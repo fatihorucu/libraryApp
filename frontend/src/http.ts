@@ -10,6 +10,7 @@ interface UserInput {
 export async function createUser(user: UserInput): Promise<Response> {
   const response = await fetch("/api/auth/register", {
     method: "POST",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
@@ -30,6 +31,7 @@ export async function login(user: LoginInput): Promise<Response> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(user),
+    credentials: "same-origin",
   });
 
   return response;
@@ -38,6 +40,7 @@ export async function login(user: LoginInput): Promise<Response> {
 export async function logout() {
   const response = await fetch("/api/auth/logout", {
     method: "POST",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
@@ -48,6 +51,7 @@ export async function logout() {
 export async function getCurrentUser(): Promise<Response> {
   const response = await fetch("/api/auth/getAuthenticatedUser", {
     method: "GET",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
